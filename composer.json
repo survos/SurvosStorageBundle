@@ -1,0 +1,46 @@
+{
+    "name": "survos/storage-bundle",
+    "description": "Symfony bundle for interacting with storage (via Flysystem)",
+    "keywords": [
+        "symfony-ux",
+        "symfony"
+    ],
+    "license": "MIT",
+    "type": "symfony-bundle",
+    "require": {
+        "php": "^8.3",
+        "symfony/config": "^6.4 || ^7.1",
+        "symfony/dependency-injection": "^6.4 || ^7.1",
+        "symfony/http-kernel": "^6.4 || ^7.1",
+        "twig/twig": "^3.4",
+        "league/flysystem-bundle": "^3.3",
+        "zenstruck/console-extra": "^1.4",
+        "zenstruck/bytes": "^1.0"
+    },
+    "require-dev": {
+        "league/flysystem-aws-s3-v3": "^3.27",
+        "phpstan/phpstan": "^2.0",
+        "symfony/browser-kit": "^6.4 || ^7.1",
+        "symfony/framework-bundle": "^6.4 || ^7.1",
+        "symfony/phpunit-bridge": "^6.4 || ^7.1",
+        "symfony/twig-bundle": "^6.4 || ^7.1",
+        "symfony/var-dumper": "^6.4 || ^7.1",
+        "survos/simple-datatables-bundle": "^1.5",
+        "symfony/yaml": "^6.4 || ^7.1",
+        "symfony/http-client": "^6.4 || ^7.1",
+        "phpunit/phpunit": "^11.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Survos\\StorageBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Survos\\StorageBundle\\Tests\\": "Tests/"
+        }
+    },
+    "suggest": {
+        "survos/simple-datatables-bundle": "searchable/sortable tables when browsing"
+    }
+}

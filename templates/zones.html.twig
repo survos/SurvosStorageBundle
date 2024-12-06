@@ -1,0 +1,27 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    {% set columns = [
+        'Id',
+        'Name',
+        'Region',
+        'FilesStored',
+        'StorageUsed',
+        'StorageHostname',
+        'DateModified'
+    ] %}
+    <twig:simple_datatables
+            perPage="20"
+            :caller="_self"
+            :columns="columns"
+            :data="zones"
+    >
+        <twig:block name="Name">
+            <a href="{{ path('survos_storage_zone', {id: row.Id, zoneName: row.Name}) }}">
+                {{ row.Name }}
+            </a>
+        </twig:block>
+
+    </twig:simple_datatables>
+{% endblock %}
