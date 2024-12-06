@@ -2,26 +2,35 @@
 
 {% block body %}
 
-    {% set columns = [
-        'Id',
-        'Name',
-        'Region',
-        'FilesStored',
-        'StorageUsed',
-        'StorageHostname',
-        'DateModified'
-    ] %}
-    <twig:simple_datatables
-            perPage="20"
-            :caller="_self"
-            :columns="columns"
-            :data="zones"
-    >
-        <twig:block name="Name">
-            <a href="{{ path('survos_storage_zone', {id: row.Id, zoneName: row.Name}) }}">
-                {{ row.Name }}
-            </a>
-        </twig:block>
+    {% for code, zone in zones   %}
 
-    </twig:simple_datatables>
+        <h2>{{ code }}</h2>
+        <a href="{{ path('survos_storage_zone', {zoneId: code}) }}">
+            {{ code }}
+        </a>
+        {{ dump(zone) }}
+    {% endfor %}
+
+{#    {% set columns = [#}
+{#        'Id',#}
+{#        'Name',#}
+{#        'Region',#}
+{#        'FilesStored',#}
+{#        'StorageUsed',#}
+{#        'StorageHostname',#}
+{#        'DateModified'#}
+{#    ] %}#}
+{#    <twig:simple_datatables#}
+{#            perPage="20"#}
+{#            :caller="_self"#}
+{#            :columns="columns"#}
+{#            :data="zones"#}
+{#    >#}
+{#        <twig:block name="Name">#}
+{#            <a href="{{ path('survos_storage_zone', {id: row.Id, zoneName: row.Name}) }}">#}
+{#                {{ row.Name }}#}
+{#            </a>#}
+{#        </twig:block>#}
+
+{#    </twig:simple_datatables>#}
 {% endblock %}

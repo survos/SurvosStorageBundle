@@ -2,13 +2,18 @@
 
 {% block body %}
 
-    <h2>{{ path  }}</h2>
+    <h2>{{ zoneId }} / {{ path  }}</h2>
+{#    {% for file in files %}#}
+{#        {{ dump(file) }}#}
+{#    {% endfor %}#}
+
+{#    {% endblock %}#}
+{#    {% block x %}#}
 
     {% set columns = [
-        'ObjectName',
-        'Length',
-        'Path',
-        'StorageZoneId',
+        'type',
+        'path',
+        'extraMetadata',
     ] %}
     <twig:simple_datatables
             perPage="20"
@@ -16,10 +21,14 @@
             :columns="columns"
             :data="files"
     >
-        <twig:block name="ObjectName">
-            <a href="{{ path('survos_storage_zone', {id: row.StorageZoneId, zoneName: row.StorageZoneName, path: row.ObjectName}) }}">
-                {{ row.ObjectName }}
+        <twig:block name="path">
+            <a href="{{ path('survos_storage_zone', {zoneId: zoneId, path: row.path}) }}">
+                {{ row.path }}
             </a>
+        </twig:block>
+
+        <twig:block name="extraMetadata">
+            {{ row.extraMetadata|json_encode }}
         </twig:block>
 
         <twig:block name="Length">

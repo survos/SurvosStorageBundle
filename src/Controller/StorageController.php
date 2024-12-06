@@ -41,8 +41,7 @@ class StorageController extends AbstractController
     ): Response|array
     {
         $this->checkSimpleDatatablesInstalled();
-        $baseApi = $this->storageService->getBaseApi();
-        return ['zones' => $baseApi->listStorageZones()->getContents()];
+        return ['zones' => $this->storageService->getZones()];
     }
 
     #[Route('/{zoneName}}/{path}/{fileName}', name: 'survos_storage_download', methods: ['GET'], requirements: ['path'=> ".+"])]
@@ -55,24 +54,31 @@ class StorageController extends AbstractController
     }
 
 
-    #[Route('/{zoneName}/{id}/{path}', name: 'survos_storage_zone', methods: ['GET'])]
+    #[Route('/{zoneId}/{path}', name: 'survos_storage_zone', methods: ['GET'],
+        requirements: [
+            'zoneId'=>'[0-9a-z_.]*',
+            'path'=>'.+'
+        ]
+    )]
     #[Template('@SurvosStorage/zone.html.twig')]
     public function zone(
-        string $zoneName,
-        string $id,
+        string $zoneId,
         ?string $path='/'
     ): Response|array
     {
+        $storage = $this->storageService->getZone($zoneId);
         $this->checkSimpleDatatablesInstalled();
-        $edgeStorageApi = $this->storageService->getEdgeApi($zoneName);
-        $list = $edgeStorageApi->listFiles(
-            storageZoneName: $zoneName,
-            path: $path
-        );
+        $files = $storage->listContents($path, false);
+//        dd(iterator_to_array($files));
+//        $edgeStorageApi = $this->storageService->getEdgeApi($zoneName);
+//        $list = $edgeStorageApi->listFiles(
+//            storageZoneName: $zoneName,
+//            path: $path
+//        );
         return [
-            'zoneName' => $zoneName,
+            'zoneId' => $zoneId,
             'path' => $path,
-            'files' => $list->getContents()
+            'files' => iterator_to_array($files)
         ];
     }
 }

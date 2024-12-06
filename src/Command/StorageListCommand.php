@@ -34,6 +34,7 @@ final class StorageListCommand extends InvokableServiceCommand
 
     ): int
     {
+        dd($this->storageService);
         if ($listZones) {
             // if no zone, we could prompt
             if (!$baseApi = $this->storageService->getBaseApi()) {
