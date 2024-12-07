@@ -1,0 +1,18 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    <div>
+        {% set path = file.name %}
+        {% for filter in ['small','medium','large'] %}
+
+            <figure>
+                {% set thumbUrl = path | imagine_filter(filter) %}
+                <img src="{{ thumbUrl }}"
+                     alt="{{ thumbUrl }}" style="width:50%">
+                <figcaption>{{ filter }}</figcaption>
+            </figure>
+        {% endfor %}
+    </div>
+    {{ dump(file) }}
+{% endblock %}

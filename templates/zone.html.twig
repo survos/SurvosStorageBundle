@@ -3,7 +3,8 @@
 {% block body %}
 
     {% set liipImagineLoaded = true %}
-    {% set liipImagineFilter = 'thumb' %}
+{#    {% set liipImagineLoaded = false %}#}
+    {% set liipImagineFilter = 'small' %}
     <h2>Root {{ zoneId }} / {{ path  }}</h2>
 {#    {% for file in files %}#}
 {#        {{ dump(file) }}#}
@@ -40,10 +41,32 @@
         </twig:block>
 
         <twig:block name="path">
-            {% if liipImagineLoaded %}
-            <img src="{{ asset('/relative/path/to/image.jpg') | imagine_filter('my_thumb', runtimeConfig) }}" />
 
-            <a href="{{ path('survos_storage_zone', {zoneId: zoneId, path: row.path}) }}">
+
+                {% set path = row.path|lower %}
+                {% if (path ends with '.jpg')
+                    or ( path ends with '.jpeg')
+                    or ( path ends with '.webp')
+                    or ( path ends with '.png')
+
+                %}
+                    {% set runtimeConfig = {} %}
+                    <div>
+
+                    {% for filter in ['medium'] %}
+
+                    {% set thumbUrl = asset(row.path) | imagine_filter(filter, runtimeConfig)  %}
+                    <a href="{{ thumbUrl }}" target="_blank">
+                    {% if liipImagineLoaded %}
+                    <img src="{{ thumbUrl}}" />
+                        {% endif %}
+{#                    <br/><code>{{ thumbUrl }}</code>#}
+                </a>
+                    {% endfor %}
+                    </div>
+            {% endif %}
+            <a href="{{ path(row.type == 'dir' ? 'survos_storage_zone': 'survos_storage_view',
+                {zoneId: zoneId, path: row.path}) }}">
                 {{ row.path }}
             </a>
         </twig:block>

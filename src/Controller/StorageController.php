@@ -40,7 +40,7 @@ class StorageController extends AbstractController
             'zones' => $this->storageService->getZones()];
     }
 
-    #[Route('/{zoneName}}/{path}/{fileName}', name: 'survos_storage_download', methods: ['GET'], requirements: ['path'=> ".+"])]
+    #[Route('/{zoneName}}/{path}/{fileName}/download', name: 'survos_storage_download', methods: ['GET'], requirements: ['path'=> ".+"])]
     #[Template('@SurvosStorage/zone.html.twig')]
     public function download(string $zoneName, string $path, string $fileName): Response
     {
@@ -48,6 +48,19 @@ class StorageController extends AbstractController
         return new Response($response); // eh
     }
 
+    #[Route('/show/{zoneId}/{path}', name: 'survos_storage_view', methods: ['GET'], requirements: ['path'=> ".+"])]
+    #[Template('@SurvosStorage/show.html.twig')]
+    public function show(string $zoneId, string $path): Response|array
+    {
+        $service = $this->storageService->getZone($zoneId);
+        $file  = [
+            'name' => $path,
+            'size' => $service->fileSize($path),
+        ];
+        return ['file' => $file];
+        $response = $this->storageService->downloadFile($fileName,$path,$zoneName);
+        return new Response($response); // eh
+    }
 
     #[Route('/{zoneId}/{path}', name: 'survos_storage_zone', methods: ['GET'],
         requirements: [
