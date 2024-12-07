@@ -28,27 +28,22 @@ class StorageController extends AbstractController
         }
     }
 
-    #[Route('/flysystem_default', name: 'flysystem_browse_default')]
-    public function flysystem(
-        FilesystemOperator $defaultStorage): Response
-    {
-
-    }
-
     #[Route('/zones', name: 'survos_storage_zones', methods: ['GET'])]
     #[Template('@SurvosStorage/zones.html.twig')]
     public function zones(
     ): Response|array
     {
+
         $this->checkSimpleDatatablesInstalled();
-        return ['zones' => $this->storageService->getZones()];
+        return [
+            'adapters' => $this->storageService->getAdapters(),
+            'zones' => $this->storageService->getZones()];
     }
 
     #[Route('/{zoneName}}/{path}/{fileName}', name: 'survos_storage_download', methods: ['GET'], requirements: ['path'=> ".+"])]
     #[Template('@SurvosStorage/zone.html.twig')]
     public function download(string $zoneName, string $path, string $fileName): Response
     {
-
         $response = $this->storageService->downloadFile($fileName,$path,$zoneName);
         return new Response($response); // eh
     }

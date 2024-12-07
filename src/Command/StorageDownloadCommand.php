@@ -89,6 +89,8 @@ END
 
             $io->info("Downloading $remoteShortName at $remotePath to  $downloadPath");
 //            dump(realPath: $downloadPath, filename: $shortDownloadFilename);
+
+
             $ret = $this->storageService->downloadFile($remoteShortName, $remotePath, $zoneName);
             file_put_contents($downloadPath, $ret->getContents());
             $size = filesize($downloadPath);

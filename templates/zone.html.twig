@@ -2,7 +2,9 @@
 
 {% block body %}
 
-    <h2>{{ zoneId }} / {{ path  }}</h2>
+    {% set liipImagineLoaded = true %}
+    {% set liipImagineFilter = 'thumb' %}
+    <h2>Root {{ zoneId }} / {{ path  }}</h2>
 {#    {% for file in files %}#}
 {#        {{ dump(file) }}#}
 {#    {% endfor %}#}
@@ -13,6 +15,8 @@
     {% set columns = [
         'type',
         'path',
+        'lastModified',
+        'fileSize',
         'extraMetadata',
     ] %}
     <twig:simple_datatables
@@ -21,7 +25,24 @@
             :columns="columns"
             :data="files"
     >
+
+        <twig:block name="type">
+            {{ row.type }} {{ row.isFile and row.mimeType ? row.mimeType }}
+            {{ row.visibility  }}
+        </twig:block>
+
+        <twig:block name="lastModified">
+            {{ row.lastModified ? row.lastModified|ago }} {# 1 second ago #}
+        </twig:block>
+
+        <twig:block name="fileSize">
+            {{ row.fileSize|default(false) ? (row.fileSize / (1024*1024))|number_format(1) }}M {# 1 second ago #}
+        </twig:block>
+
         <twig:block name="path">
+            {% if liipImagineLoaded %}
+            <img src="{{ asset('/relative/path/to/image.jpg') | imagine_filter('my_thumb', runtimeConfig) }}" />
+
             <a href="{{ path('survos_storage_zone', {zoneId: zoneId, path: row.path}) }}">
                 {{ row.path }}
             </a>
@@ -29,6 +50,7 @@
 
         <twig:block name="extraMetadata">
             {{ row.extraMetadata|json_encode }}
+            {{ dump(row) }}
         </twig:block>
 
         <twig:block name="Length">

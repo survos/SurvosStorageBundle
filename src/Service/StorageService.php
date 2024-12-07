@@ -3,24 +3,25 @@
 namespace Survos\StorageBundle\Service;
 
 use League\Flysystem\Filesystem;
+use Survos\StorageBundle\Model\Adapter;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class StorageService
 {
+    /**
+     * @param iterable $storageZones <Filesystem[]>
+     * @param array $config
+     * @param array $zoneMap
+     */
     public function __construct(
-        #[AutowireIterator('flysystem.storage')] private $storageZones,
+        #[AutowireIterator('flysystem.storage')] private iterable $storageZones, // no key!
         private array                                    $config = [],
-        private array                                    $adapters = []
+        private array $zoneMap = [] // maps code to zone index
     )
     {
         return;
-        dd($this->adapters);
-        foreach ($this->storageZones as $storageZone) {
-            $adapter = $this->getPrivateProperty($storageZone, 'adapter');
-            dump($adapter);
-        }
         dd($storageZones);
 // Create a StorageClient using any HTTP client implementing "Psr\Http\Client\ClientInterface".
         if (!$this->storageZone) {
@@ -34,13 +35,39 @@ class StorageService
         }
     }
 
+    public function getAdapter(string $storageZone)
+    {
+        $storageZone = $this->getZone($storageZone);
+        $adapter = $this->getPrivateProperty($storageZone, 'adapter');
+        return $adapter;
+    }
+
     public function getZones(): array
     {
         $zones = [];
         foreach (iterator_to_array($this->storageZones) as $idx=>$flysystem) {
-            $zones[$this->adapters[$idx]] = $flysystem;
+            $zones[$this->zoneMap[$idx]] = $flysystem;
         }
         return $zones;
+    }
+
+    public function getAdapters(): array
+    {
+        $adapters = [];
+        foreach ($this->storageZones as $idx => $flysystem) {
+            $flysystemAdapter = $this->getPrivateProperty($flysystem, 'adapter');
+            // now map the adapter private properties
+            $adapter = new Adapter(
+                $this->zoneMap[$idx],
+                $flysystemAdapter::class,
+                $this->getPrivateProperty($flysystemAdapter, 'rootLocation'),
+                $this->getPrivateProperty($flysystemAdapter, 'bucket')
+            );
+
+
+            $adapters[$this->zoneMap[$idx]] = $adapter;
+        }
+        return $adapters;
     }
 
     public function getZone(string $code): Filesystem
@@ -53,12 +80,16 @@ class StorageService
     // this is the map from index to code, it assumes the order is the same.
     public function addAdapter(string $code, int $index)
     {
-        $this->adapters[$index] = $code;
+        $this->zoneMap[$index] = $code;
     }
     private function getPrivateProperty(mixed $object, string $property): mixed
     {
-        $property  = (new \ReflectionClass($object))->getProperty($property);
-        return $property->getValue($object);
+        $reflection = new \ReflectionClass($object);
+        if ($reflection->hasProperty($property)) {
+            return $reflection->getProperty($property)->getValue($object);
+        } else {
+            return null;
+        }
     }
 
     public function getStorageZones(): iterable
@@ -75,6 +106,11 @@ class StorageService
 
     public function downloadFile(string $filename, string $path, ?string $storageZone = null): StorageClientResponseInterface
     {
+        $adapter = $this->getZone($storageZone);
+        dd($path, $filename);
+        if (!$adapter->has($filename)) {
+
+        }
         $ret = $this->getEdgeApi()->downloadFile(
             storageZoneName: $storageZone ?? $this->getStorageZone(),
             path: $path,
