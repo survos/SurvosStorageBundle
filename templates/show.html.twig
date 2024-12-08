@@ -8,8 +8,11 @@
 
             <figure>
                 {% set thumbUrl = path | imagine_filter(filter) %}
-                <img src="{{ thumbUrl }}"
-                     alt="{{ thumbUrl }}" style="width:50%">
+                <a href="{{ thumbUrl }}" target="_blank">
+
+                    <img src="{{ thumbUrl }}"
+                         alt="{{ thumbUrl }}" style="width:50%">
+                </a>
                 <figcaption>{{ filter }}</figcaption>
             </figure>
         {% endfor %}

@@ -2,8 +2,7 @@
 
 {% block body %}
 
-    {% set liipImagineLoaded = true %}
-{#    {% set liipImagineLoaded = false %}#}
+    {% set liipImagineLoaded = app.request.get('liip', false) %}
     {% set liipImagineFilter = 'small' %}
     <h2>Root {{ zoneId }} / {{ path  }}</h2>
 {#    {% for file in files %}#}
@@ -50,17 +49,19 @@
                     or ( path ends with '.png')
 
                 %}
-                    {% set runtimeConfig = {} %}
+{#                    {% set runtimeConfig = {"thumbnail": {"size": [50, 50] }} %}#}
                     <div>
 
                     {% for filter in ['medium'] %}
 
-                    {% set thumbUrl = asset(row.path) | imagine_filter(filter, runtimeConfig)  %}
+                    {% set thumbUrl = asset(row.path) | imagine_filter(filter, runtimeConfig|default({}))  %}
                     <a href="{{ thumbUrl }}" target="_blank">
                     {% if liipImagineLoaded %}
                     <img src="{{ thumbUrl}}" />
+                        {% else %}
+                            <code>{{ thumbUrl }}</code>
+
                         {% endif %}
-{#                    <br/><code>{{ thumbUrl }}</code>#}
                 </a>
                     {% endfor %}
                     </div>
