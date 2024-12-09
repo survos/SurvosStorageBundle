@@ -29,14 +29,14 @@
             </a>
         </twig:block>
         <twig:block name="class">
-            {{ row|get_class }}
+            {% set adapter = adapters[idx] %}
+            {{ adapter.class }}
         </twig:block>
 
         <twig:block name="adapter">
-
             {% set adapter = adapters[idx] %}
-            {{ adapter.rootLocation??'' }}
-            {{ dump(adapter) }}
+            {{ adapter.bucket??'' }}
+{#            {{ dump(adapter) }}#}
 {#            {{ row.rootLocation| }}#}
 {#            <a href="{{ path('survos_storage_zone', {id: row.Id, zoneName: row.Name}) }}">#}
 {#                {{ row.Name }}#}
