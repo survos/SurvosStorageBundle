@@ -53,16 +53,17 @@
                     <div>
 
                     {% for filter in ['medium'] %}
+                        @todo: configure image viewer for
 
                     {% set thumbUrl = asset(row.path) | imagine_filter(filter, runtimeConfig|default({}))  %}
                     <a href="{{ thumbUrl }}" target="_blank">
-                    {% if liipImagineLoaded %}
-                    <img src="{{ thumbUrl}}" />
-                        {% else %}
-                            <code>{{ thumbUrl }}</code>
+{#                    {% if liipImagineLoaded %}#}
+{#                    <img src="{{ thumbUrl}}" />#}
+{#                        {% else %}#}
+{#                            <code>{{ thumbUrl }}</code>#}
 
-                        {% endif %}
-                </a>
+{#                        {% endif %}#}
+{#                </a>#}
                     {% endfor %}
                     </div>
             {% endif %}
@@ -73,8 +74,7 @@
         </twig:block>
 
         <twig:block name="extraMetadata">
-            {{ row.extraMetadata|json_encode }}
-            {{ dump(row) }}
+            {{ row.extraMetadata ? row.extraMetadata|json_encode }}
         </twig:block>
 
         <twig:block name="Length">
