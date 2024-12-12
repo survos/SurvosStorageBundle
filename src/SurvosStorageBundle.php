@@ -71,7 +71,7 @@ class SurvosStorageBundle extends AbstractBundle implements CompilerPassInterfac
             ->addTag('controller.service_arguments')
         ;
 
-        foreach ([StorageConfigCommand::class, StorageListCommand::class, StorageUploadCommand::class, StorageDownloadCommand::class] as $commandName) {
+        foreach ([StorageListCommand::class, StorageUploadCommand::class, StorageDownloadCommand::class] as $commandName) {
             $builder->autowire($commandName)
                 ->setAutoconfigured(true)
                 ->addTag('console.command')
@@ -85,37 +85,14 @@ class SurvosStorageBundle extends AbstractBundle implements CompilerPassInterfac
 //            ->addTag('twig.extension');
     }
 
-    private function addZonesSection(ArrayNodeDefinition $rootNode): void
-    {
-        $rootNode
-            ->children()
-            ->arrayNode('zones')
-            ->arrayPrototype()
-            ->children()
-                ->scalarNode('name')->end()
-                ->scalarNode('id')->end()
-                ->scalarNode('region')->end()
-                ->scalarNode('readonly_password')->end()
-                ->scalarNode('password')->end()
-            ->end()
-            ->end()
-            ->end();
-
-    }
-
     public function configure(DefinitionConfigurator $definition): void
     {
         $rootNode = $definition->rootNode();
         $rootNode
             ->children()
-                ->scalarNode('api_key')->defaultNull()->end()
-                ->scalarNode('storage_zone')->defaultValue(null)->end()
-//                ->scalarNode('region')->defaultValue(null)->end()
-//                ->scalarNode('readonly_password')->defaultValue(null)->end()
-//                ->scalarNode('password')->defaultValue(null)->end()
+                ->booleanNode('enabled')->defaultTrue()->end()
             ->end();
 
-        $this->addZonesSection($rootNode);
     }
 
 }
