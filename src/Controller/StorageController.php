@@ -77,6 +77,13 @@ class StorageController extends AbstractController
         $storage = $this->storageService->getZone($zoneId);
         $this->checkSimpleDatatablesInstalled();
         $files = $storage->listContents($path, false);
+        foreach ($files as $file) {
+            $storage->setVisibility($file->path(), 'public');
+//            dd(get_class_methods($file));
+
+            $url = $storage->publicUrl($file->path(), $file->visibility());
+            dd($url);
+        }
 //        dd(iterator_to_array($files));
 //        $edgeStorageApi = $this->storageService->getEdgeApi($zoneName);
 //        $list = $edgeStorageApi->listFiles(
