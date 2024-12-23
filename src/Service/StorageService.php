@@ -22,7 +22,6 @@ class StorageService
     )
     {
         return;
-        dd($storageZones);
 // Create a StorageClient using any HTTP client implementing "Psr\Http\Client\ClientInterface".
         if (!$this->storageZone) {
             $this->storageZone = $this->config['storage_zone'];

@@ -10,7 +10,7 @@
                 {% set thumbUrl = path | imagine_filter(filter) %}
                 <a href="{{ thumbUrl }}" target="_blank">
                     @todo: {{ thumbUrl }}
-{#                    <img src="{{ thumbUrl }}" alt="{{ thumbUrl }}" style="width:50%">#}
+                    <img src="{{ thumbUrl }}" alt="{{ thumbUrl }}" style="width:50%">
                 </a>
                 <figcaption>{{ filter }}</figcaption>
             </figure>
