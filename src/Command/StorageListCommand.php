@@ -34,6 +34,30 @@ final class StorageListCommand extends InvokableServiceCommand
 
     ): int
     {
+        $adapters = $this->storageService->getAdapters();
+        $table = new Table($io);
+        $table->setHeaderTitle($zoneName . "/" . $path);
+        $headers = ['Name', 'Class','root'];
+        $table->setHeaders($headers);
+        foreach ($adapters as $adapter) {
+            $row = [
+                $adapter->getName(),
+                $adapter->getClass(),
+                $adapter->getRootLocation()??$adapter->getBucket(),
+            ];
+//            $row['Id'] = "<href=https://dash.storage.net/storage/$id/file-manager>$id</>";
+
+            $table->addRow($row);
+        }
+        $table->render();
+        return self::SUCCESS;
+
+
+        $zones =  $this->storageService->getZones();
+        foreach ($zones as $zone) {
+            dd($zone);
+        }
+
         dd($this->storageService);
         if ($listZones) {
             // if no zone, we could prompt
@@ -43,22 +67,6 @@ final class StorageListCommand extends InvokableServiceCommand
             }
 
             $zones = $baseApi->listStorageZones()->getContents();
-            $table = new Table($io);
-            $table->setHeaderTitle($zoneName . "/" . $path);
-            $headers = ['Name', 'StorageUsed','FilesStored','Id'];
-            $table->setHeaders($headers);
-            foreach ($zones as $zone) {
-                $row = [];
-                foreach ($headers as $header) {
-                    $row[$header] = $zone[$header];
-                }
-                $id = $row['Id'];
-                $row['Id'] = "<href=https://dash.storage.net/storage/$id/file-manager>$id</>";
-
-                $table->addRow($row);
-            }
-            $table->render();
-            return self::SUCCESS;
         }
 
         if (!$zoneName) {
@@ -71,6 +79,8 @@ final class StorageListCommand extends InvokableServiceCommand
             storageZoneName: $zoneName,
             path: $path
         )->getContents();
+
+        return self::SUCCESS;
 
         // @todo: see if https://www.php.net/manual/en/class.numberformatter.php works to remove the dependency
         $table = new Table($io);
