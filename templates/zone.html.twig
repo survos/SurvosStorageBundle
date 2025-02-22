@@ -5,6 +5,7 @@
     {% set liipImagineLoaded = app.request.get('liip', false) %}
     {% set liipImagineFilter = 'small' %}
     <h2>Root {{ zoneId }} / {{ path  }}</h2>
+    {{ jsonLength }} for JSON, {{ data|length }} objects (dir/file)
 {#    {% for file in files %}#}
 {#        {{ dump(file) }}#}
 {#    {% endfor %}#}

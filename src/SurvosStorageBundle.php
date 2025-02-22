@@ -3,6 +3,7 @@
 namespace Survos\StorageBundle;
 
 use League\FlysystemBundle\FlysystemBundle;
+use Survos\StorageBundle\Command\IterateCommand;
 use Survos\StorageBundle\Command\StorageConfigCommand;
 use Survos\StorageBundle\Command\StorageListCommand;
 use Survos\StorageBundle\Command\StorageDownloadCommand;
@@ -71,7 +72,7 @@ class SurvosStorageBundle extends AbstractBundle implements CompilerPassInterfac
             ->addTag('controller.service_arguments')
         ;
 
-        foreach ([StorageListCommand::class, StorageUploadCommand::class, StorageDownloadCommand::class] as $commandName) {
+        foreach ([StorageListCommand::class, IterateCommand::class,  StorageUploadCommand::class, StorageDownloadCommand::class] as $commandName) {
             $builder->autowire($commandName)
                 ->setAutoconfigured(true)
                 ->addTag('console.command')

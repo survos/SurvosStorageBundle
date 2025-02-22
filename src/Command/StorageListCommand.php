@@ -29,11 +29,17 @@ final class StorageListCommand extends InvokableServiceCommand
     public function __invoke(
         IO                                                                                          $io,
         #[Argument(description: 'path name within zone')] string        $path='',
-        #[Option(name: 'zone', description: 'zone name')] ?string $zoneName = null,
-        #[Option(name: 'zones', description: 'list the zone names')] bool $listZones = false,
+        #[Argument(name: 'zone', description: 'zone id, e.g. default.storage')] string        $zoneId='',
+        #[Option] bool $recursive = false,
 
     ): int
     {
+        $storage = $this->storageService->getZone($zoneId);
+        $iterator = $storage->listContents($path, $recursive);
+        foreach ($iterator as $file) {
+            dd($file);
+        }
+
         $adapters = $this->storageService->getAdapters();
         $table = new Table($io);
         $table->setHeaderTitle($zoneName . "/" . $path);
@@ -50,56 +56,6 @@ final class StorageListCommand extends InvokableServiceCommand
             $table->addRow($row);
         }
         $table->render();
-        return self::SUCCESS;
-
-
-        $zones =  $this->storageService->getZones();
-        foreach ($zones as $zone) {
-            dd($zone);
-        }
-
-        dd($this->storageService);
-        if ($listZones) {
-            // if no zone, we could prompt
-            if (!$baseApi = $this->storageService->getBaseApi()) {
-                $io->error("Listing zones requires a base api key");
-                return self::FAILURE;
-            }
-
-            $zones = $baseApi->listStorageZones()->getContents();
-        }
-
-        if (!$zoneName) {
-            $zoneName = $this->storageService->getStorageZone();
-        }
-        assert($zoneName, "missing zone name");
-
-        $edgeStorageApi = $this->storageService->getEdgeApi($zoneName);
-        $list = $edgeStorageApi->listFiles(
-            storageZoneName: $zoneName,
-            path: $path
-        )->getContents();
-
-        return self::SUCCESS;
-
-        // @todo: see if https://www.php.net/manual/en/class.numberformatter.php works to remove the dependency
-        $table = new Table($io);
-        $table->setHeaderTitle($zoneName . "/" . $path);
-        $headers = ['ObjectName', 'Path','Length', 'Url'];
-        $table->setHeaders($headers);
-        foreach ($list as $file) {
-            $row = [];
-            foreach ($headers as $header) {
-                $row[$header] = $file[$header]??null;
-            }
-            $row['Length'] = Bytes::parse($row['Length']); // "389.79 GB"
-            $row['Url'] = "<href=https://symfony.com>Symfony Homepage</>";
-            $table->addRow($row);
-        }
-        $table->render();
-        $this->io()->output()->writeln('<href=https://symfony.com>Symfony Homepage</>');
-
-        $io->success($this->getName() . ' success ' . $zoneName);
         return self::SUCCESS;
     }
 

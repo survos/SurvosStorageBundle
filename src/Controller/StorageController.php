@@ -8,6 +8,7 @@ use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 
 class StorageController extends AbstractController
@@ -71,12 +72,17 @@ class StorageController extends AbstractController
     #[Template('@SurvosStorage/zone.html.twig')]
     public function zone(
         string $zoneId,
-        ?string $path='/'
+        ?string $path='/',
+        #[MapQueryParameter] bool $deep=true
     ): Response|array
     {
         $storage = $this->storageService->getZone($zoneId);
         $this->checkSimpleDatatablesInstalled();
-        $files = iterator_to_array($storage->listContents($path, false));
+        $iterator = $storage->listContents($path, $deep);
+
+        $files = iterator_to_array($iterator);
+        $json = json_encode($files);
+//        dd(count($files), strlen($json));
 //        foreach ($files as $file) {
 //            $storage->setVisibility($file->path(), 'public');
 ////            dd(get_class_methods($file));
@@ -91,6 +97,8 @@ class StorageController extends AbstractController
 //            path: $path
 //        );
         return [
+            'jsonLength' => strlen($json),
+            'data' => json_decode($json, true),
             'zoneId' => $zoneId,
             'path' => $path,
             'files' => $files
