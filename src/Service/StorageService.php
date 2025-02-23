@@ -2,7 +2,10 @@
 
 namespace Survos\StorageBundle\Service;
 
+use Aws\S3\S3ClientInterface;
 use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemAdapter;
+use Psr\Http\Client\ClientInterface;
 use Survos\StorageBundle\Model\Adapter;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -34,11 +37,21 @@ class StorageService
         }
     }
 
-    public function getAdapter(string $storageZone)
+    public function getAdapter(string $storageZone): FilesystemAdapter
     {
         $storageZone = $this->getZone($storageZone);
         $adapter = $this->getPrivateProperty($storageZone, 'adapter');
         return $adapter;
+    }
+
+    public function getClient(FilesystemAdapter $adapter): ClientInterface|S3ClientInterface
+    {
+        return $this->getprivateProperty($adapter, 'client');
+    }
+
+    public function getBucket(FilesystemAdapter $adapter): string
+    {
+        return $this->getprivateProperty($adapter, 'bucket');
     }
 
     public function getZones(): array

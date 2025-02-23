@@ -2,6 +2,9 @@
 
 namespace Survos\StorageBundle\Controller;
 
+use Aws\Result;
+use Aws\S3\S3ClientInterface;
+use League\Flysystem\FileAttributes;
 use League\Flysystem\FilesystemOperator;
 use Survos\StorageBundle\Service\StorageService;
 use Symfony\Bridge\Twig\Attribute\Template;
@@ -16,7 +19,7 @@ class StorageController extends AbstractController
     public function __construct(
         private StorageService $storageService,
         #[AutowireIterator('flysystem.storage')] $storages,
-        private $simpleDatatablesInstalled = false
+        private $simpleDatatablesInstalled = false,
     )
     {
 
@@ -73,14 +76,22 @@ class StorageController extends AbstractController
     public function zone(
         string $zoneId,
         ?string $path='/',
-        #[MapQueryParameter] bool $deep=true
+        #[MapQueryParameter] bool $deep=false,
+        #[MapQueryParameter] bool $addMeta=false
     ): Response|array
     {
         $storage = $this->storageService->getZone($zoneId);
         $this->checkSimpleDatatablesInstalled();
+        $adapter = $this->storageService->getAdapter($zoneId);
+        $adapter = $this->storageService->getAdapter($zoneId);
+        $client = $this->storageService->getClient($adapter);
+        $bucket = $this->storageService->getBucket($adapter);
+
         $iterator = $storage->listContents($path, $deep);
 
+
         $files = iterator_to_array($iterator);
+//        $this->addMetadata($files, $addMeta, $storage, $client, $bucket);
         $json = json_encode($files);
 //        dd(count($files), strlen($json));
 //        foreach ($files as $file) {
@@ -103,5 +114,51 @@ class StorageController extends AbstractController
             'path' => $path,
             'files' => $files
         ];
+    }
+
+    /**
+     * @param array $files
+     * @param bool $addMeta
+     * @param \League\Flysystem\Filesystem $storage
+     * @param S3ClientInterface|\Psr\Http\Client\ClientInterface $client
+     * @param string $bucket
+     * @return void
+     * @throws \League\Flysystem\FilesystemException
+     */
+    public function addMetadata(array $files, bool $addMeta, \League\Flysystem\Filesystem $storage, S3ClientInterface|\Psr\Http\Client\ClientInterface $client, string $bucket): void
+    {
+        /** @var FileAttributes $file */
+        foreach ($files as $file) {
+            if ($file['type'] === 'file') {
+                $options = [
+                    'Metadata' => [
+                        'x-museado-meta-size' => $file->fileSize(),
+                        'x-museado-random' => rand(0, 100000)
+                    ],
+                ];
+                $copyFile = $file->path();
+                if ($addMeta) {
+                    // proper way is to do copyFile/Object if updating
+                    $content = $storage->read($file->path());
+                    $obj = $client->upload($bucket,
+                        $copyFile,
+                        body: $content,
+                        options: ['params' => $options]);
+                    dump(obj: $obj, data: $obj->toArray(), meta: $obj->get('@metadata'));
+                }
+//                $storage->delete($copyFile);
+//                if (!$storage->has($copyFile)) {
+                /** @var Result $headers */
+                $headers = $client->headObject(array(
+                    "Bucket" => $bucket,
+                    "Key" => $file->path(),
+                ));
+                dump(headers: $headers,
+                    metadata: $headers->get('Metadata'),
+                    metadataKeys: $headers->get('@metadata'),
+                    file: $copyFile);
+
+            }
+        }
     }
 }
