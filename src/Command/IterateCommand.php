@@ -47,7 +47,6 @@ final class IterateCommand extends InvokableServiceCommand
         $storage = $this->storageService->getZone($zoneId);
 
         if ($dispatch) {
-
             $message = new DirectoryListingMessage($zoneId, 'dir', $path);
             $this->messageBus->dispatch($message);
             $io->success("$zoneId $path dispatched");
