@@ -24,17 +24,6 @@ class StorageService
         private array $zoneMap = [] // maps code to zone index
     )
     {
-        return;
-// Create a StorageClient using any HTTP client implementing "Psr\Http\Client\ClientInterface".
-        if (!$this->storageZone) {
-            $this->storageZone = $this->config['storage_zone'];
-        }
-        foreach ($this->config['zones'] as $zoneData) {
-            if (!array_key_exists('name', $zoneData)) {
-                throw new \LogicException($this->storageZone . " is not defined in config/packages/survos_storage.yaml");
-            }
-            $this->zones[$zoneData['name']] = $zoneData;
-        }
     }
 
     public function getAdapter(string $storageZone): FilesystemAdapter
@@ -116,20 +105,8 @@ class StorageService
     }
 
 
-    public function downloadFile(string $filename, string $path, ?string $storageZone = null): StorageClientResponseInterface
+    public function downloadFile(string $filename, string $path, ?string $storageZone = null)
     {
-        $adapter = $this->getZone($storageZone);
-        dd($path, $filename);
-        if (!$adapter->has($filename)) {
-
-        }
-        $ret = $this->getEdgeApi()->downloadFile(
-            storageZoneName: $storageZone ?? $this->getStorageZone(),
-            path: $path,
-            fileName: $filename,
-        );
-
-        return $ret;
     }
 
     public function uploadFile(
@@ -141,14 +118,6 @@ class StorageService
     )
     {
 
-        $ret = $this->getEdgeApi(writeAccess: true)->uploadFile(
-            $storageZoneName,
-            $fileName,
-            $body,
-            $path,
-            $headers,
-        );
-        return $ret;
     }
 
 

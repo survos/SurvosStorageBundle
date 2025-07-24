@@ -79,10 +79,6 @@ final class StorageUploadCommand extends Command
             }
         }
 
-        if (!$zoneName) {
-            $zoneName = $this->storageService->getStorageZone();
-        }
-
         $content = file_get_contents($filename);
 
         // remotePath should have the slash

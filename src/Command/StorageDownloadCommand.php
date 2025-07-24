@@ -9,6 +9,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use ZipArchive;
@@ -98,7 +99,7 @@ END
             $io->info("Unzipped $downloadPath to $localDirOrFilename");
             $dir = $downloadDir . DIRECTORY_SEPARATOR . pathinfo($downloadPath, PATHINFO_FILENAME);
             $io->info("Unzipping $downloadPath to $dir");
-            $this->unzip($downloadPath, $dir);
+            $this->unzip($downloadPath, $dir, $io);
 
             $table = new Table($io);
             $table->setStyle('compact');
@@ -151,7 +152,7 @@ END
      * @param string $destination
      * @throws Exception
      */
-    private function unzip(string $zipPath, string $destination): void
+    private function unzip(string $zipPath, string $destination, SymfonyStyle $io): void
     {
         $zip = new ZipArchive();
         try {
@@ -160,7 +161,7 @@ END
                 $zip->close();
             }
         } catch (Exception $e) {
-            $this->io()->error($e->getMessage());
+            $io->error($e->getMessage());
             throw new Exception("Could not unzip $zipPath to $destination");
         }
     }

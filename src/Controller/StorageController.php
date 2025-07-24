@@ -18,7 +18,7 @@ class StorageController extends AbstractController
 {
     public function __construct(
         private StorageService $storageService,
-        #[AutowireIterator('flysystem.storage')] $storages,
+        #[AutowireIterator('flysystem.storage')] iterable $storages,
         private $simpleDatatablesInstalled = false,
     )
     {
