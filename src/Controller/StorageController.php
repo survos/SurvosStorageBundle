@@ -83,9 +83,9 @@ class StorageController extends AbstractController
         $storage = $this->storageService->getZone($zoneId);
         $this->checkSimpleDatatablesInstalled();
         $adapter = $this->storageService->getAdapter($zoneId);
-        $adapter = $this->storageService->getAdapter($zoneId);
-        $client = $this->storageService->getClient($adapter);
-        $bucket = $this->storageService->getBucket($adapter);
+
+//        $client = $this->storageService->getClient($adapter);
+//        $bucket = $this->storageService->getBucket($adapter);
 
         $iterator = $storage->listContents($path, $deep);
 

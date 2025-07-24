@@ -56,7 +56,7 @@
                     {% for filter in ['medium'] %}
                         @todo: configure image viewer for
 
-
+                    {% guard filter imagine_filter  %}
                     {% set thumbUrl = asset(row.path) | imagine_filter(filter, runtimeConfig|default({}))  %}
                     <a href="{{ thumbUrl }}" target="_blank">
 {#                    {% if liipImagineLoaded %}#}
@@ -66,6 +66,7 @@
 
 {#                        {% endif %}#}
 {#                </a>#}
+                        {% endguard %}
                     {% endfor %}
                     </div>
             {% endif %}

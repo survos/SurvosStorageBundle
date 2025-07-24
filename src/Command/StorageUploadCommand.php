@@ -4,31 +4,16 @@ namespace Survos\StorageBundle\Command;
 
 use Exception;
 use Survos\StorageBundle\Service\StorageService;
+use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Attribute\Option;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Zenstruck\Console\Attribute\Argument;
-use Zenstruck\Console\Attribute\Option;
-use Zenstruck\Console\InvokableServiceCommand;
-use Zenstruck\Console\IO;
-use Zenstruck\Console\RunsCommands;
-use Zenstruck\Console\RunsProcesses;
 
-use function PHPUnit\Framework\throwException;
 
-#[AsCommand('storage:upload', 'upload remote storage files')]
-final class StorageUploadCommand extends InvokableServiceCommand
-{
-    use RunsCommands;
-    use RunsProcesses;
-
-    public function __construct(
-        #[Autowire('%kernel.project_dir%')] private string $projectDir,
-        private readonly StorageService $storageService,
-    ) {
-        parent::__construct();
-        $this->setHelp(<<<END
+#[AsCommand('storage:upload', 'upload remote storage files', help: <<<END
 # if local path is within project, mirror the file structure, otherwise pass it as second argument
 bin/console storage:upload local/path/filename.zip [remote/path/filename.zip] --zone=zoneName 
 # change name and path
@@ -37,15 +22,22 @@ bin/console storage:upload local/path/filename.zip remote/path/newFilename.zip
 bin/console storage:upload local/path/filename.zip remote/path/
 
 remote path is required unless a mirror of local
-END
-    );
+END)]
+final class StorageUploadCommand extends Command
+{
+
+    public function __construct(
+        #[Autowire('%kernel.project_dir%')] private string $projectDir,
+        private readonly StorageService $storageService,
+    ) {
+        parent::__construct();
     }
 
     /**
      * @throws Exception
      */
     public function __invoke(
-        IO $io,
+        SymfonyStyle $io,
         #[Argument(description: 'file name to upload')] string $filename = '',
         #[Argument(description: 'path within zone')] string $remoteDirOrFilename = '',
         #[Option(name: 'zone', description: 'zone name')] ?string $zoneName = null,

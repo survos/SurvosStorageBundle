@@ -2,18 +2,22 @@
 
 {% block body %}
 
-    <div>
-        {% set path = file.name %}
-        {% for filter in ['small','medium','large'] %}
+<div>
+    {% set path = file.name %}
+    {% for filter in ['small','medium','large'] %}
 
-            <figure>
-                {% set thumbUrl = path | imagine_filter(filter) %}
-                <a href="{{ thumbUrl }}" target="_blank">
-                    @todo: {{ thumbUrl }}
-                    <img src="{{ thumbUrl }}" alt="{{ thumbUrl }}" style="width:50%">
-                </a>
-                <figcaption>{{ filter }}</figcaption>
-            </figure>
-        {% endfor %}
-    </div>
+    <figure>
+        {% guard filter imagine_filter %}
+        {% set thumbUrl = path | imagine_filter(filter) %}
+            <a href="{{ thumbUrl }}" target="_blank">
+                @todo: {{ thumbUrl }}
+                <img src="{{ thumbUrl }}" alt="{{ thumbUrl }}" style="width:50%">
+            </a>
+        {% else %}
+            imagine_filter is not installed
+        {% endguard %}
+        <figcaption>{{ filter }}</figcaption>
+    </figure>
+    {% endfor %}
+</div>
 {% endblock %}
