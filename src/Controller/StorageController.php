@@ -18,7 +18,7 @@ class StorageController extends AbstractController
 {
     public function __construct(
         private StorageService $storageService,
-        #[AutowireIterator('flysystem.storage')] iterable $storages,
+//        private #[AutowireIterator('flysystem.storage')] iterable $storages,
         private $simpleDatatablesInstalled = false,
     )
     {
@@ -148,15 +148,15 @@ class StorageController extends AbstractController
                 }
 //                $storage->delete($copyFile);
 //                if (!$storage->has($copyFile)) {
-                /** @var Result $headers */
-                $headers = $client->headObject(array(
-                    "Bucket" => $bucket,
-                    "Key" => $file->path(),
-                ));
-                dump(headers: $headers,
-                    metadata: $headers->get('Metadata'),
-                    metadataKeys: $headers->get('@metadata'),
-                    file: $copyFile);
+//                /** @var Result $headers */
+//                $headers = $client->headObject(array(
+//                    "Bucket" => $bucket,
+//                    "Key" => $file->path(),
+//                ));
+//                dump(headers: $headers,
+//                    metadata: $headers->get('Metadata'),
+//                    metadataKeys: $headers->get('@metadata'),
+//                    file: $copyFile);
 
             }
         }
