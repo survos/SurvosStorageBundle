@@ -71,6 +71,12 @@ class StorageService
         return $adapters;
     }
 
+    public function getAdapterModel(string $storageZone): Adapter
+    {
+        return $this->getAdapters()[$storageZone];
+
+    }
+
     public function getZone(string $code): Filesystem
     {
         return $this->getZones()[$code];
@@ -115,8 +121,10 @@ class StorageService
         ?string $storageZoneName = null,
         string  $path = '',
         array   $headers = [],
-    )
+    ): array
     {
+        // ??
+        return [];
 
     }
 

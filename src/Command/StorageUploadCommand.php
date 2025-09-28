@@ -44,7 +44,7 @@ final class StorageUploadCommand extends Command
         #[Option(name: 'zip', description: 'isZip?')] ?bool $zip = null,
 //        #[Option(description: 'dir')] ?string $relativeDir = './',
     ): int {
-        $io->info($this->getName() . ' started');
+        $io->info(self::class . ' started');
         if (!file_exists($filename)) {
             $io->error("File $filename does not exist");
             return self::FAILURE;
@@ -91,7 +91,7 @@ final class StorageUploadCommand extends Command
             path: $remotePath . '/'
         );
 
-        $io->info($ret->getStatusCode() . ' ' . $ret->getReasonPhrase());
+//        $io->info($ret->getStatusCode() . ' ' . $ret->getReasonPhrase());
 
         $io->success($filename . " has been uploaded to $zoneName/$remotePath$filename" );
 

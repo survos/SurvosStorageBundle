@@ -12,12 +12,20 @@ class Adapter
      * @param string|null $bucket
      */
     public function __construct(
-        private string  $name,
-        private string  $class,
-        private ?string $rootLocation = null,
-        private ?string $bucket = null
+        private(set) string  $name,
+        private(set) string  $class,
+        private(set) ?string $rootLocation = null,
+        private(set) ?string $bucket = null
     )
     {
+    }
+
+    public function getAbsolutePath(string $path): string
+    {
+        // only true if local!  Better is to use the underlying adapter and has
+        $absolutePath =  $this->rootLocation.'/'.$path;
+//        dd($absolutePath, $this->rootLocation, file_exists($absolutePath));
+        return $absolutePath;
     }
 
     public function getName(): string
