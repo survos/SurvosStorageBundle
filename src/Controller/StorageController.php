@@ -37,7 +37,7 @@ class StorageController extends AbstractController
     public function zones(
     ): Response|array
     {
-
+        dd($this->storageService->getZones());
         $this->checkSimpleDatatablesInstalled();
         return [
             'adapters' => $this->storageService->getAdapters(),
